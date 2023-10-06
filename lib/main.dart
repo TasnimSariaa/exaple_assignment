@@ -21,13 +21,13 @@ class ButtonColorChangeScreen extends StatefulWidget {
 
 class _ButtonColorChangeScreenState extends State<ButtonColorChangeScreen> {
   String selectedSize = '';
-  Color selectedColor = Colors.black38; // Default color
+  Color defaultColor = Colors.grey; // Default color is gray
 
-  void changeButtonColor(String size, Color color) {
+  void changeButtonColor(String size) {
     setState(() {
       selectedSize = size;
-      selectedColor = color;
     });
+    showSizeSnackbar(context, size);
   }
 
   void showSizeSnackbar(BuildContext context, String size) {
@@ -46,40 +46,73 @@ class _ButtonColorChangeScreenState extends State<ButtonColorChangeScreen> {
         centerTitle: true,
       ),
       body: Center(
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          //mainAxisAlignment: MainAxisAlignment.center,
-          //crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                changeButtonColor('Small', Colors.amber);
-                showSizeSnackbar(context, 'Small');
-              },
-              style: ElevatedButton.styleFrom(
-                primary: selectedSize == 'Small' ? selectedColor : null,
-              ),
-              child: Text('s'),
+            Wrap(
+              spacing: 20,
+              runSpacing: 20,
+              alignment: WrapAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    changeButtonColor('Small');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: selectedSize == 'Small' ? defaultColor : null,
+                  ),
+                  child: Text('S'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    changeButtonColor('Medium');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: selectedSize == 'Medium' ? defaultColor : null,
+                  ),
+                  child: Text('M'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    changeButtonColor('Large');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: selectedSize == 'Large' ? defaultColor : null,
+                  ),
+                  child: Text('L'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    changeButtonColor('XL');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: selectedSize == 'XL' ? defaultColor : null,
+                  ),
+                  child: Text('XL'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    changeButtonColor('XXL');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: selectedSize == 'XXL' ? defaultColor : null,
+                  ),
+                  child: Text('XXL'),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
             ),
             ElevatedButton(
               onPressed: () {
-                changeButtonColor('Medium', Colors.amber);
-                showSizeSnackbar(context, 'Medium');
+                changeButtonColor('XXXL');
               },
               style: ElevatedButton.styleFrom(
-                primary: selectedSize == 'Medium' ? selectedColor : null,
+                primary: selectedSize == 'XXXL' ? defaultColor : null,
               ),
-              child: Text('M'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                changeButtonColor('Large', Colors.amber);
-                showSizeSnackbar(context, 'Large');
-              },
-              style: ElevatedButton.styleFrom(
-                primary: selectedSize == 'Large' ? selectedColor : null,
-              ),
-              child: Text('L'),
+              child: Text('XXXL'),
             ),
           ],
         ),
