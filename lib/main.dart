@@ -8,111 +8,241 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ButtonColorChangeScreen(),
+      debugShowCheckedModeBanner: false,
+      home: ContainerWithCurvedBackground(),
     );
   }
 }
 
-class ButtonColorChangeScreen extends StatefulWidget {
+class ContainerWithCurvedBackground extends StatefulWidget {
   @override
-  _ButtonColorChangeScreenState createState() =>
-      _ButtonColorChangeScreenState();
+  State<ContainerWithCurvedBackground> createState() => _ContainerWithCurvedBackgroundState();
 }
 
-class _ButtonColorChangeScreenState extends State<ButtonColorChangeScreen> {
-  String selectedSize = '';
-  Color defaultColor = Colors.grey; // Default color is gray
+class _ContainerWithCurvedBackgroundState extends State<ContainerWithCurvedBackground> {
+int c =0;
+int item=0;
 
-  void changeButtonColor(String size) {
-    setState(() {
-      selectedSize = size;
-    });
-    showSizeSnackbar(context, size);
-  }
-
-  void showSizeSnackbar(BuildContext context, String size) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Selected Size: $size'),
-      ),
-    );
-  }
-
+int p1=51,p2=30,p3=43;
+void _incrementCounter(){
+  setState(() {
+    c++;
+  });
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Size Selector'),
-        centerTitle: true,
+        //title: Text('Curved Container with Image'),
+          actions: [
+      IconButton(
+      icon: Icon(Icons.search),
+      iconSize: 35,
+      onPressed: () {
+        print("Search");
+      },
+    ),
+  ],
+
+    backgroundColor: Colors.transparent,
       ),
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
+
           children: [
-            Wrap(
-              spacing: 20,
-              runSpacing: 20,
-              alignment: WrapAlignment.center,
+
+            SizedBox(height: 20,),
+            Row(
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    changeButtonColor('Small');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: selectedSize == 'Small' ? defaultColor : null,
+                SizedBox(width: 10,),
+                Text('My Bag',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
+              ],
+            ),
+            SizedBox(height: 20),
+            Stack(
+              children: [
+                // Curved Container
+                Container(
+                  height: 100,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Colors.black12,
                   ),
-                  child: Text('S'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    changeButtonColor('Medium');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: selectedSize == 'Medium' ? defaultColor : null,
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: Text('\$$p1',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),),
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Icon(Icons.more_vert,color: Colors.black,size: 30,),),
+                // Positioned Image on the Left
+                Positioned(
+                  left: 0, // Adjust the left position as needed
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 100, // Adjust the width as needed
+                    decoration: BoxDecoration(
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+
+                      // borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+                      child: Image.network(
+                        "https://images.unsplash.com/photo-1695831440805-1b623520e70e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80",
+                        width: 300, // Adjust the width as needed
+                        height: 200, // Adjust the height as needed
+                        fit: BoxFit.cover, // Cover the entire space
+                      ),
+                    ),
                   ),
-                  child: Text('M'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    changeButtonColor('Large');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: selectedSize == 'Large' ? defaultColor : null,
+                Positioned(
+                  top: 0,
+                  left: 105,
+                  child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('T-Shirt',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                      SizedBox(height: 3,),
+                      Row(
+                        children: [
+                          Text('Color:',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.blueAccent),),
+                          Text('Black   ',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.black),),
+                          Text('Size:',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.blueAccent),),
+                          Text('L',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.black),),
+                        ],
+                      ),
+                      SizedBox(height: 10,),
+                      Row(
+                        children: [
+                          ElevatedButton(onPressed:(){
+                            c++;
+                            item++;
+                            setState(() {
+                          });
+                          }, child: Text('+',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(), // Make it circular
+                                padding: EdgeInsets.all(16), // Set padding as needed
+                                //primary: color, // Set the button color
+                                backgroundColor: Colors.black,
+                              ),
+                          ),
+                          SizedBox(width: 5),
+                          Text('1',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                          SizedBox(width: 5),
+                          ElevatedButton(onPressed:(){
+
+                            c--;
+                            item--;
+                            setState(() {
+                            });
+                          }, child: Text('-',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                            style: ElevatedButton.styleFrom(
+                              shape: CircleBorder(), // Make it circular
+                              padding: EdgeInsets.all(16), // Set padding as needed
+                              //primary: color, // Set the button color
+                              backgroundColor: Colors.black,
+                            ),
+                          )
+
+                        ],
+                      ),
+
+
+                    ],
                   ),
-                  child: Text('L'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    changeButtonColor('XL');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: selectedSize == 'XL' ? defaultColor : null,
+                )
+              ],
+            ),
+            SizedBox(height: 20),
+            Stack(
+              children: [
+                // Curved Container
+                Container(
+                  height: 100,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Colors.black12,
                   ),
-                  child: Text('XL'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    changeButtonColor('XXL');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: selectedSize == 'XXL' ? defaultColor : null,
+                // Positioned Image on the Left
+                Positioned(
+                  left: 0, // Adjust the left position as needed
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 100, // Adjust the width as needed
+                    decoration: BoxDecoration(
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+
+                      // borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+                      child: Image.network(
+                        "https://images.unsplash.com/photo-1695831440805-1b623520e70e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80",
+                        width: 300, // Adjust the width as needed
+                        height: 200, // Adjust the height as needed
+                        fit: BoxFit.cover, // Cover the entire space
+                      ),
+                    ),
                   ),
-                  child: Text('XXL'),
                 ),
               ],
             ),
-            SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                changeButtonColor('XXXL');
-              },
-              style: ElevatedButton.styleFrom(
-                primary: selectedSize == 'XXXL' ? defaultColor : null,
-              ),
-              child: Text('XXXL'),
+            SizedBox(height: 20),
+            Stack(
+              children: [
+                // Curved Container
+                Container(
+                  height: 100,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Colors.black12,
+                  ),
+                ),
+                // Positioned Image on the Left
+                Positioned(
+                  left: 0, // Adjust the left position as needed
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 100, // Adjust the width as needed
+                    decoration: BoxDecoration(
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                      ),
+
+                      // borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+                      child: Image.network(
+                        "https://images.unsplash.com/photo-1695831440805-1b623520e70e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80",
+                        width: 300, // Adjust the width as needed
+                        height: 200, // Adjust the height as needed
+                        fit: BoxFit.cover, // Cover the entire space
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
