@@ -1,479 +1,319 @@
 import 'package:flutter/material.dart';
+//import 'package:live_class_project/home_screen.dart';
+
+/// Todo_Application
+/// CRUD - Create, Read, Update, Delete
 
 void main() {
-  runApp(MyApp());
+  runApp(const TodoApp());
+}
+//n
+
+class UpdateTaskModal extends StatefulWidget {
+  const UpdateTaskModal({
+    super.key,
+    required this.todo,
+    required this.onTodoUpdate
+  });
+
+  final Todo todo;
+  final Function(String) onTodoUpdate;
+
+  @override
+  State<UpdateTaskModal> createState() => _UpdateTaskModalState();
 }
 
-class MyApp extends StatelessWidget {
+class _UpdateTaskModalState extends State<UpdateTaskModal> {
+  late TextEditingController todoTEController;
+
+  @override
+  void initState() {
+    super.initState();
+    todoTEController = TextEditingController(text: widget.todo.details);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ContainerWithCurvedBackground(),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Update todo',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.close),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 24,
+          ),
+          TextFormField(
+            controller: todoTEController,
+            maxLines: 4,
+            decoration: const InputDecoration(
+              hintText: 'Enter your todo here',
+              enabledBorder: OutlineInputBorder(),
+              focusedBorder: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  widget.onTodoUpdate(todoTEController.text.trim());
+                  Navigator.pop(context);
+                },
+                child: const Text('Update'),
+              ))
+        ],
+      ),
     );
   }
 }
+//t
+class Todo {
+  String details;
+  DateTime createdDateTime, updatedDateTime;
+  String status;
 
-class ContainerWithCurvedBackground extends StatefulWidget {
+  Todo({
+    required this.details,
+    required this.createdDateTime,
+    required this.updatedDateTime,
+    this.status = 'pending',
+  });
+}
+//1
+
+class AddNewTaskModal extends StatefulWidget {
+  const AddNewTaskModal({
+    super.key,
+    required this.onAddTap,
+  });
+
+  final Function(Todo) onAddTap;
+
   @override
-  State<ContainerWithCurvedBackground> createState() => _ContainerWithCurvedBackgroundState();
+  State<AddNewTaskModal> createState() => _AddNewTaskModalState();
 }
 
-class _ContainerWithCurvedBackgroundState extends State<ContainerWithCurvedBackground> {
-int x =0,y=0,z=0;
-int item=0;
+class _AddNewTaskModalState extends State<AddNewTaskModal> {
+  final TextEditingController todoTEController = TextEditingController();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-int total=0;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Add new todo',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 24,
+            ),
+            TextFormField(
+              maxLines: 4,
+              controller: todoTEController,
+              decoration: const InputDecoration(
+                hintText: 'Enter your todo here',
+                enabledBorder: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(),
+              ),
+              validator: (String? value) {
+                if (value?.isEmpty ?? true) {
+                  return 'Enter a value';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      Todo todo = Todo(details: todoTEController.text.trim(),
+                        createdDateTime: DateTime.now(),
+                        updatedDateTime: DateTime.now(),
+                      );
+                      widget.onAddTap(todo);
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Add'),
+                ))
+          ],
+        ),
+      ),
+    );
+  }
+}
+//
 
-int p1=51,p2=30,p3=43;
+class TodoApp extends StatelessWidget {
+  const TodoApp({super.key});
 
-MySnackBar(message,context){
-  return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message),
-        duration: Duration(seconds: 3) ,
-      )
-  );
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: _HomeScreen(),
+    );
+  }
+
 }
 
+class _HomeScreen extends StatefulWidget {
+  const _HomeScreen({super.key});
+
+  @override
+  State<_HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<_HomeScreen> {
+
+  List<Todo> todoList = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: Text('Curved Container with Image'),
-          actions: [
-      IconButton(
-      icon: Icon(Icons.search),
-      iconSize: 35,
-      onPressed: () {
-        print("Search");
-      },
-    ),
-  ],
-
-    backgroundColor: Colors.transparent,
+        title: const Text('Todos'),
       ),
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-
-          children: [
-
-            SizedBox(height: 20,),
-            Row(
-              children: [
-                SizedBox(width: 10,),
-                Text('My Bag',style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
-              ],
-            ),
-            SizedBox(height: 20),
-            Stack(
-              children: [
-                // Curved Container
-                Container(
-                  height: 100,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: Colors.black12,
-                  ),
-                ),
-                Positioned(
-                  bottom: 15,
-                  right: 13,
-                  child: Text('$p1\$',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),),
-                Positioned(
-                  top: 6,
-                  right: 6,
-                  child: Icon(Icons.more_vert,color: Colors.black,size: 30,),),
-                // Positioned Image on the Left
-                Positioned(
-                  left: 0, // Adjust the left position as needed
-                  top: 0,
-                  bottom: 0,
-                  child: Container(
-                    width: 100, // Adjust the width as needed
-                    decoration: BoxDecoration(
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        bottomLeft: Radius.circular(20),
-                      ),
-
-                      // borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
-                      child: Image.network(
-                        "https://images.unsplash.com/photo-1695831440805-1b623520e70e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80",
-                        width: 300, // Adjust the width as needed
-                        height: 200, // Adjust the height as needed
-                        fit: BoxFit.cover, // Cover the entire space
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  left: 105,
-                  child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return AddNewTaskModal(
+                onAddTap: (Todo task) {
+                  addTodo(task);
+                },
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: ListView.separated(
+        itemCount: todoList.length,
+        itemBuilder: (context, index) {
+          final Todo todo = todoList[index];
+          //final String formattedDate =
+          //DateFormat('hh:mm a dd-MM-yy').format(todo.createdDateTime);
+          return ListTile(
+            tileColor: todo.status == 'done' ? Colors.grey : null, // ternary
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Actions'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          SizedBox(width: 10,),
-                          Text('Shoes',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                        ],
-                      ),
-                      SizedBox(height: 3,),
-                      Row(
-                        children: [
-                          SizedBox(width: 10,),
-
-                          Text('Color:',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.blueGrey),),
-                          Text('Green     ',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.black),),
-                          Text('Size:',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.blueGrey),),
-                          Text('L',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.black),),
-                        ],
-                      ),
-                      SizedBox(height: 10,),
-                      Row(
-                        children: [
-                          ElevatedButton(onPressed:(){
-                            x++;
-                            total=total+p1;
-                            setState(() {
-                          });
-                          }, child: Text('+',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                              style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(), // Make it circular
-                                padding: EdgeInsets.all(16), // Set padding as needed
-                                //primary: color, // Set the button color
-                                backgroundColor: Colors.black,
-                              ),
+                          ListTile(
+                            leading: const Icon(Icons.edit),
+                            title: const Text('Update'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) {
+                                    return UpdateTaskModal(
+                                      todo: todo,
+                                      onTodoUpdate: (String updatedDetailsText) {
+                                        updateTodo(index, updatedDetailsText);
+                                      },
+                                    );
+                                  });
+                            },
                           ),
-                          SizedBox(width: 5),
-                          Text('$x',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                          SizedBox(width: 5),
-                          ElevatedButton(onPressed:(){
-
-                            x--;
-                            if(x<0){
-                              x=0;
-                              total=total+p1;
-                            }
-                            total=total-p1;
-                            setState(() {
-                            });
-                          }, child: Text('-',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                            style: ElevatedButton.styleFrom(
-                              shape: CircleBorder(), // Make it circular
-                              padding: EdgeInsets.all(16), // Set padding as needed
-                              //primary: color, // Set the button color
-                              backgroundColor: Colors.black,
-                            ),
-                          )
-
+                          const Divider(
+                            height: 0,
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.delete_outline),
+                            title: const Text('Delete'),
+                            onTap: () {
+                              deleteTodo(index);
+                              Navigator.pop(context);
+                            },
+                          ),
                         ],
                       ),
-
-
-                    ],
-                  ),
-                ),
-                )
-              ],
+                    );
+                  });
+            },
+            onLongPress: () {
+              String currentStatus = todo.status == 'pending' ? 'done' : 'pending';
+              updateTodoStatus(index, currentStatus);
+            },
+            leading: CircleAvatar(
+              child: Text('${index + 1}'),
             ),
-            SizedBox(height: 20),
-            Stack(
-              children: [
-                // Curved Container
-                Container(
-                  height: 100,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: Colors.black12,
-                  ),
-                ),
-                Positioned(
-                  bottom: 15,
-                  right: 13,
-                  child: Text('$p2\$',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),),
-                Positioned(
-                  top: 6,
-                  right: 6,
-                  child: Icon(Icons.more_vert,color: Colors.black,size: 30,),),
-                // Positioned Image on the Left
-                Positioned(
-                  left: 0, // Adjust the left position as needed
-                  top: 0,
-                  bottom: 0,
-                  child: Container(
-                    width: 100, // Adjust the width as needed
-                    decoration: BoxDecoration(
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        bottomLeft: Radius.circular(20),
-                      ),
-
-                      // borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
-                      child: Image.network(
-                        "https://plus.unsplash.com/premium_photo-1692340973720-3e82f5dc22ea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80",
-                        width: 300, // Adjust the width as needed
-                        height: 200, // Adjust the height as needed
-                        fit: BoxFit.cover, // Cover the entire space
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  left: 105,
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(width: 10,),
-                            Text('Sunglass',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                          ],
-                        ),
-                        SizedBox(height: 3,),
-                        Row(
-                          children: [
-                            SizedBox(width: 10,),
-
-                            Text('Color:',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.blueGrey),),
-                            Text('Pink   ',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.black),),
-                            Text('Size:',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.blueGrey),),
-                            Text('s',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.black),),
-                          ],
-                        ),
-                        SizedBox(height: 10,),
-                        Row(
-                          children: [
-                            ElevatedButton(onPressed:(){
-                              y++;
-                              total=total+p2;
-                              setState(() {
-                              });
-                            }, child: Text('+',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                              style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(), // Make it circular
-                                padding: EdgeInsets.all(16), // Set padding as needed
-                                //primary: color, // Set the button color
-                                backgroundColor: Colors.black,
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Text('$y',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                            SizedBox(width: 5),
-                            ElevatedButton(onPressed:(){
-
-                              y--;
-                              if(y<0){
-                                y=0;
-                                total=total+p2;
-                              }
-                              total=total-p2;
-                              setState(() {
-                              });
-                            }, child: Text('-',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                              style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(), // Make it circular
-                                padding: EdgeInsets.all(16), // Set padding as needed
-                                //primary: color, // Set the button color
-                                backgroundColor: Colors.black,
-                              ),
-                            )
-
-                          ],
-                        ),
-
-
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-            SizedBox(height: 20),
-            Stack(
-              children: [
-                // Curved Container
-                Container(
-                  height: 100,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: Colors.black12,
-                  ),
-                ),
-                Positioned(
-                  bottom: 15,
-                  right: 13,
-                  child: Text('$p3\$',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),),
-                Positioned(
-                  top: 6,
-                  right: 6,
-                  child: Icon(Icons.more_vert,color: Colors.black,size: 30,),),
-                // Positioned Image on the Left
-                Positioned(
-                  left: 0, // Adjust the left position as needed
-                  top: 0,
-                  bottom: 0,
-                  child: Container(
-                    width: 100, // Adjust the width as needed
-                    decoration: BoxDecoration(
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        bottomLeft: Radius.circular(20),
-                      ),
-
-                      // borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
-                      child: Image.network(
-                        "https://images.unsplash.com/photo-1696263075325-a813bff45acf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80",
-                        width: 300, // Adjust the width as needed
-                        height: 200, // Adjust the height as needed
-                        fit: BoxFit.cover, // Cover the entire space
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  left: 105,
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(width: 10,),
-                            Text('Tops',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                          ],
-                        ),
-                        SizedBox(height: 3,),
-                        Row(
-                          children: [
-                            SizedBox(width: 10,),
-
-                            Text('Color:',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.blueGrey),),
-                            Text('Black    ',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.black),),
-                            Text('Size:',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.blueGrey),),
-                            Text('s',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 13,color: Colors.black),),
-                          ],
-                        ),
-                        SizedBox(height: 10,),
-                        Row(
-                          children: [
-                            ElevatedButton(onPressed:(){
-                              z++;
-                              total=total+p3;
-                              setState(() {
-                              });
-                            }, child: Text('+',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                              style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(), // Make it circular
-                                padding: EdgeInsets.all(16), // Set padding as needed
-                                //primary: color, // Set the button color
-                                backgroundColor: Colors.black,
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Text('$z',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                            SizedBox(width: 5),
-                            ElevatedButton(onPressed:(){
-
-                              z--;
-                              if(z<0){
-                                z=0;
-                                total=total+p3;
-                              }
-                              total=total-p3;
-                              setState(() {
-                              });
-                            }, child: Text('-',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                              style: ElevatedButton.styleFrom(
-                                shape: CircleBorder(), // Make it circular
-                                padding: EdgeInsets.all(16), // Set padding as needed
-                                //primary: color, // Set the button color
-                                backgroundColor: Colors.black,
-                              ),
-                            )
-
-                          ],
-                        ),
-
-
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-
-
-            SizedBox(height: 100,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
-              ),
-
-              height: 40,
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Text("Total Amount",style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.grey
-                    ),),
-                    SizedBox(width: 180,),
-                    Text("$total\$",style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontSize: 20
-
-                    )
-                    ),
-
-
-                  ],
-                ),
-              ),
-            ),
-            Divider(),
-
-            //SizedBox(height: 5,),
-
-            SizedBox(
-              height: 40,
-              width: double.infinity,
-              child: ElevatedButton(onPressed: (){
-                MySnackBar("CHECKED OUT....", context);
-
-              },
-                  style: ButtonStyle(
-                      fixedSize: MaterialStateProperty.all(Size(double.infinity,30))
-                  ),
-                  child: Text("Check Out"),
-
-              ),
-            ),
-          ],
-        ),
+            title: Text(todo.details),
+            //subtitle: Text(formattedDate),
+            trailing: Text(todo.status.toUpperCase()),
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return const Divider(
+            height: 4,
+          );
+        },
       ),
     );
+  }
+
+  void addTodo(Todo todo) {
+    todoList.add(todo);
+    setState(() {});
+  }
+
+  void deleteTodo(int index) {
+    todoList.removeAt(index);
+    setState(() {});
+  }
+
+  void updateTodo(int index, String todoDetails) {
+    todoList[index].details = todoDetails;
+    setState(() {});
+  }
+
+  void updateTodoStatus(int index, String status) {
+    todoList[index].status = status;
+    setState(() {});
   }
 }
