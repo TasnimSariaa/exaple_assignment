@@ -22,7 +22,7 @@ class _MyScreenState extends State<MyScreen> {
 
   int selectedCount = 0;
 
-  void toggleSelection(int index) {
+  void Selection(int index) {
     setState(() {
       isSelected[index] = !isSelected[index];
       selectedCount = isSelected.where((selected) => selected).length;
@@ -64,7 +64,7 @@ class _MyScreenState extends State<MyScreen> {
             title: Text("Item ${1+index}"),
             tileColor: isSelected[index] ? Colors.blueGrey : null,
             onTap: () {
-              toggleSelection(index);
+              Selection(index);
             },
           );
         },
